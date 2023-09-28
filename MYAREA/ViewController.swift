@@ -285,3 +285,5 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         resetRouteTimer?.invalidate()
     }
 }
+//終わり
+

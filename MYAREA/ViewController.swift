@@ -193,11 +193,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
 
         if existingLocations.count > 0 {
             print("got in to checkArea")
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss" // これは`datetime`のフォーマットに合わせる必要があります。
-
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSSxxxxx" // これは`datetime`のフォーマットに合わせる必要があります。
 
             let now = Date()
             var closestLocation: locationinfo? = nil
@@ -234,6 +229,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
                     coordinatesData.append((x: x, y: y, z: z, index: index))
                     index += 1
                 }
+                
+                print("Stored Coordinates Data:")
+                for data in coordinatesData {
+                    print("Index: \(data.index), x: \(data.x), y: \(data.y), z: \(data.z)")
+                }
 
                 // 保存処理を追加するならここ。
 
@@ -244,6 +244,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
                 var totalArea: Double = 0 // 累積するエリア
 
                 if coordinatesData.count >= 2 {
+                    print("gotintocoordinatesData")
                     for i in 1..<coordinatesData.count - 1 {
                         let A = coordinatesData[0]
                         let B = coordinatesData[i]

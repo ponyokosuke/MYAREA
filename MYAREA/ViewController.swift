@@ -17,6 +17,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     @IBOutlet weak var clickZoomin: UIButton!
     @IBOutlet weak var clickZoomout: UIButton!
     @IBOutlet weak var area: UILabel!
+    @IBOutlet weak var CurrentLocationButton: UIButton!
+    @IBOutlet weak var dateLabel: UILabel!
     
     var routeCoordinates: [CLLocationCoordinate2D] = []
     var currentPolyline: MKPolyline?
@@ -38,6 +40,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         mapView.delegate = self
         
         setupRouteResetTimer()
+        
+        updateDateLabel()
     }
     
     @IBAction func clickZoomin(_ sender: Any) {
@@ -64,6 +68,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         mapView.setRegion(newRegion, animated: true)
     }
     
+    var hasSetInitialPosition = false
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations:[CLLocation]) {
         guard let location = locations.last else { return }
         
@@ -72,7 +78,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         print("[DBG]longitude : \(longitude)")
         print("[DBG]latitude : \(latitude)")
         
-        mapView.setCenter(location.coordinate, animated: true)
+        if !hasSetInitialPosition {
+            mapView.setCenter(location.coordinate, animated: true)
+            hasSetInitialPosition = true
+        }
         
         saveLocationToRealm(longitude: longitude, latitude: latitude)
         checkArea(longitude: longitude, latitude: latitude)
@@ -284,6 +293,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     deinit {
         resetRouteTimer?.invalidate()
     }
+    
+    @IBAction func CurrentLocation(_ sender: Any) {
+        if let userLocation = locationManager.location?.coordinate {
+            mapView.setCenter(userLocation, animated: true)
+        }
+    }
+    
+    func updateDateLabel() {
+        let date = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd"
+        let dateString = formatter.string(from: date)
+        dateLabel.text = dateString
+    }
 }
-//終わり
-

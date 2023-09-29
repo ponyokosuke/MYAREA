@@ -173,12 +173,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     }
     
     func saveLocationToRealm(longitude: Double, latitude: Double) {
-        let currentDateTimeString = getCurrentDateTimeString()
+        let currentDateTime = Date()
         
         let realm = try! Realm()
         
         let newLocation = locationinfo()
-        newLocation.datetime = currentDateTimeString
+        newLocation.datetime = currentDateTime
         newLocation.longitude = longitude
         newLocation.latitude = latitude
         
@@ -186,89 +186,93 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
             realm.add(newLocation)
         }
     }
-    
+
     func checkArea(longitude: Double, latitude: Double) {
         let realm = try! Realm()
         let existingLocations = realm.objects(locationinfo.self).filter("longitude = \(longitude) AND latitude = \(latitude)")
-        
+
         if existingLocations.count > 0 {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss" // これは`datetime`のフォーマットに合わせる必要があります。
-            
+            print("got in to checkArea")
+//            let dateFormatter = DateFormatter()
+//            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss" // これは`datetime`のフォーマットに合わせる必要があります。
+
+//            let dateFormatter = DateFormatter()
+//            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSSxxxxx" // これは`datetime`のフォーマットに合わせる必要があります。
+
             let now = Date()
             var closestLocation: locationinfo? = nil
             var shortestTimeInterval: TimeInterval = .infinity
-            
+
             for location in existingLocations {
-                if let date = dateFormatter.date(from: location.datetime) {
-                    let timeInterval = abs(date.timeIntervalSince(now))
-                    if timeInterval < shortestTimeInterval {
-                        shortestTimeInterval = timeInterval
-                        closestLocation = location
-                    }
+                let timeInterval = abs(location.datetime.timeIntervalSince(now))
+                if timeInterval < shortestTimeInterval {
+                    shortestTimeInterval = timeInterval
+                    closestLocation = location
                 }
             }
-            
+
             if let closestLocation = closestLocation {
                 print("最も近い日時のlocation: \(closestLocation.datetime), 経度: \(closestLocation.longitude), 経度: \(closestLocation.latitude)")
-                
+
                 // 地球の半径 (km)
                 let r: Double = 6371.0
-                
+
                 // 各点のx, y, z座標とその点が何番目のデータであるかを保存する配列
                 var coordinatesData: [(x: Double, y: Double, z: Double, index: Int)] = []
-                
+
                 var index = 1
                 let locationsFromClosestToNow = realm.objects(locationinfo.self).sorted(byKeyPath: "datetime", ascending: true).filter("datetime >= %@", closestLocation.datetime)
-                
+
                 for location in locationsFromClosestToNow {
                     let latitudeInRadians = location.latitude * .pi / 180.0
                     let longitudeInRadians = location.longitude * .pi / 180.0
-                    
+
                     let x = r * cos(latitudeInRadians) * cos(longitudeInRadians)
                     let y = r * cos(latitudeInRadians) * sin(longitudeInRadians)
                     let z = r * sin(latitudeInRadians)
-                    
+
                     coordinatesData.append((x: x, y: y, z: z, index: index))
                     index += 1
                 }
-                
+
                 // 保存処理を追加するならここ。
 
                 for data in coordinatesData {
                     print("位置: \(data.index)番目, x: \(data.x), y: \(data.y), z: \(data.z)")
                 }
-                
+
                 var totalArea: Double = 0 // 累積するエリア
 
-                for i in 1..<coordinatesData.count - 1 {
-                    let A = coordinatesData[0]
-                    let B = coordinatesData[i]
-                    let C = coordinatesData[i + 1]
-                    
-                    let AB = (x: B.x - A.x, y: B.y - A.y, z: B.z - A.z)
-                    let AC = (x: C.x - A.x, y: C.y - A.y, z: C.z - A.z)
-                    
-                    let absAB = sqrt(AB.x * AB.x + AB.y * AB.y + AB.z * AB.z)
-                    let absAC = sqrt(AC.x * AC.x + AC.y * AC.y + AC.z * AC.z)
-                    
-                    let dotProduct = AB.x * AC.x + AB.y * AC.y + AB.z * AC.z
-                    let crossProductMagnitude = sqrt((AB.y * AC.z - AB.z * AC.y) * (AB.y * AC.z - AB.z * AC.y) +
-                                                     (AB.z * AC.x - AB.x * AC.z) * (AB.z * AC.x - AB.x * AC.z) +
-                                                     (AB.x * AC.y - AB.y * AC.x) * (AB.x * AC.y - AB.y * AC.x))
-                    
-                    let angleBetween = asin(crossProductMagnitude / (absAB * absAC))
-                    let result = 1/2 * absAB * absAC * sin(angleBetween)
-                    
-                    totalArea += result // 結果を累積
-                    
-                    print("位置: \(B.index)番目と\(C.index)番目の間の計算結果: \(result)")
+                if coordinatesData.count >= 2 {
+                    for i in 1..<coordinatesData.count - 1 {
+                        let A = coordinatesData[0]
+                        let B = coordinatesData[i]
+                        let C = coordinatesData[i + 1]
+
+                        let AB = (x: B.x - A.x, y: B.y - A.y, z: B.z - A.z)
+                        let AC = (x: C.x - A.x, y: C.y - A.y, z: C.z - A.z)
+
+                        let absAB = sqrt(AB.x * AB.x + AB.y * AB.y + AB.z * AB.z)
+                        let absAC = sqrt(AC.x * AC.x + AC.y * AC.y + AC.z * AC.z)
+
+                        let dotProduct = AB.x * AC.x + AB.y * AC.y + AB.z * AC.z
+                        let crossProductMagnitude = sqrt((AB.y * AC.z - AB.z * AC.y) * (AB.y * AC.z - AB.z * AC.y) +
+                                                         (AB.z * AC.x - AB.x * AC.z) * (AB.z * AC.x - AB.x * AC.z) +
+                                                         (AB.x * AC.y - AB.y * AC.x) * (AB.x * AC.y - AB.y * AC.x))
+
+                        let angleBetween = asin(crossProductMagnitude / (absAB * absAC))
+                        let result = 1/2 * absAB * absAC * sin(angleBetween)
+
+                        totalArea += result // 結果を累積
+
+                        print("位置: \(B.index)番目と\(C.index)番目の間の計算結果: \(result)")
+                    }
                 }
                 
                 print("全体の面積の合計: \(totalArea)") // 累積した結果を出力
-                
+
                 area.text = String(totalArea)
-                
+
                 var coordinates: [CLLocationCoordinate2D] = []
                 for location in locationsFromClosestToNow {
                     coordinates.append(CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude))

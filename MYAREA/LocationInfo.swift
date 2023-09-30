@@ -8,7 +8,7 @@
 import Foundation
 import RealmSwift
 
-class locationinfo: Object {
+class LocationInfo: Object {
     @Persisted var datetime: Date = Date()
     @Persisted var longitude: Double = 0.0
     @Persisted var latitude: Double = 0.0

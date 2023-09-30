@@ -16,7 +16,7 @@
 		4591333F2AB80F750066910C /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4591333E2AB80F750066910C /* MapKit.framework */; };
 		459133422AB822FB0066910C /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 459133412AB822FB0066910C /* Realm */; };
 		459133442AB822FB0066910C /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 459133432AB822FB0066910C /* RealmSwift */; };
-		459133462AB823F90066910C /* locationinfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459133452AB823F90066910C /* locationinfo.swift */; };
+		459133462AB823F90066910C /* LocationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459133452AB823F90066910C /* LocationInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +29,7 @@
 		459133152AB803160066910C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		459133172AB803160066910C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4591333E2AB80F750066910C /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
-		459133452AB823F90066910C /* locationinfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = locationinfo.swift; sourceTree = "<group>"; };
+		459133452AB823F90066910C /* LocationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,7 +69,7 @@
 				459133092AB803150066910C /* AppDelegate.swift */,
 				4591330B2AB803150066910C /* SceneDelegate.swift */,
 				4591330D2AB803150066910C /* ViewController.swift */,
-				459133452AB823F90066910C /* locationinfo.swift */,
+				459133452AB823F90066910C /* LocationInfo.swift */,
 				4591330F2AB803150066910C /* Main.storyboard */,
 				459133122AB803160066910C /* Assets.xcassets */,
 				459133142AB803160066910C /* LaunchScreen.storyboard */,
@@ -166,7 +166,7 @@
 			files = (
 				4591330E2AB803150066910C /* ViewController.swift in Sources */,
 				4591330A2AB803150066910C /* AppDelegate.swift in Sources */,
-				459133462AB823F90066910C /* locationinfo.swift in Sources */,
+				459133462AB823F90066910C /* LocationInfo.swift in Sources */,
 				4591330C2AB803150066910C /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -94,7 +94,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         }
         
         let realm = try! Realm()
-        let locations = realm.objects(locationinfo.self)
+        let locations = realm.objects(LocationInfo.self)
         
         var coordinates: [CLLocationCoordinate2D] = []
         for location in locations {
@@ -177,7 +177,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         
         let realm = try! Realm()
         
-        let newLocation = locationinfo()
+        let newLocation = LocationInfo()
         newLocation.datetime = currentDateTime
         newLocation.longitude = longitude
         newLocation.latitude = latitude
@@ -189,13 +189,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
 
     func checkArea(longitude: Double, latitude: Double) {
         let realm = try! Realm()
-        let existingLocations = realm.objects(locationinfo.self).filter("longitude = \(longitude) AND latitude = \(latitude)")
+        let existingLocations = realm.objects(LocationInfo.self).filter("longitude = \(longitude) AND latitude = \(latitude)")
 
         if existingLocations.count > 0 {
             print("got in to checkArea")
 
             let now = Date()
-            var closestLocation: locationinfo? = nil
+            var closestLocation: LocationInfo? = nil
             var shortestTimeInterval: TimeInterval = .infinity
 
             for location in existingLocations {
@@ -213,33 +213,36 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
                 let r: Double = 6371.0
 
                 // 各点のx, y, z座標とその点が何番目のデータであるかを保存する配列
-                var coordinatesData: [(x: Double, y: Double, z: Double, index: Int)] = []
+                var coordinatesData: [CubicData] = []
 
                 var index = 1
-                let locationsFromClosestToNow = realm.objects(locationinfo.self).sorted(byKeyPath: "datetime", ascending: true).filter("datetime >= %@", closestLocation.datetime)
+                let locationsFromClosestToNow = realm.objects(LocationInfo.self).sorted(byKeyPath: "datetime", ascending: true).filter("datetime >= %@", closestLocation.datetime)
 
                 for location in locationsFromClosestToNow {
                     let latitudeInRadians = location.latitude * .pi / 180.0
                     let longitudeInRadians = location.longitude * .pi / 180.0
 
-                    let x = r * cos(latitudeInRadians) * cos(longitudeInRadians)
-                    let y = r * cos(latitudeInRadians) * sin(longitudeInRadians)
-                    let z = r * sin(latitudeInRadians)
-
-                    coordinatesData.append((x: x, y: y, z: z, index: index))
-                    index += 1
+//                    let x = r * cos(latitudeInRadians) * cos(longitudeInRadians)
+//                    let y = r * cos(latitudeInRadians) * sin(longitudeInRadians)
+//                    let z = r * sin(latitudeInRadians)
+//
+//                    coordinatesData.append((x: x, y: y, z: z, index: index))
+//                    index += 1
+                    
+                    let cubicData = CubicData(x: r * cos(latitudeInRadians) * cos(longitudeInRadians), y: r * cos(latitudeInRadians) * sin(longitudeInRadians), z: r * sin(latitudeInRadians))
+                              coordinatesData.append(cubicData)
                 }
                 
-                print("Stored Coordinates Data:")
-                for data in coordinatesData {
-                    print("Index: \(data.index), x: \(data.x), y: \(data.y), z: \(data.z)")
-                }
+//                print("Stored Coordinates Data:")
+//                for data in coordinatesData {
+//                    print("Index: \(data.index), x: \(data.x), y: \(data.y), z: \(data.z)")
+//                }
 
                 // 保存処理を追加するならここ。
 
-                for data in coordinatesData {
-                    print("位置: \(data.index)番目, x: \(data.x), y: \(data.y), z: \(data.z)")
-                }
+//                for data in coordinatesData {
+//                    print("位置: \(data.index)番目, x: \(data.x), y: \(data.y), z: \(data.z)")
+//                }
 
                 var totalArea: Double = 0 // 累積するエリア
 
@@ -249,24 +252,32 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
                         let A = coordinatesData[0]
                         let B = coordinatesData[i]
                         let C = coordinatesData[i + 1]
+                        let isPlus: Bool = locationsFromClosestToNow[0].latitude * locationsFromClosestToNow[1].longitude - locationsFromClosestToNow[0].longitude * locationsFromClosestToNow[1].latitude >= 0
 
-                        let AB = (x: B.x - A.x, y: B.y - A.y, z: B.z - A.z)
-                        let AC = (x: C.x - A.x, y: C.y - A.y, z: C.z - A.z)
+//                        let AB = (x: B.x - A.x, y: B.y - A.y, z: B.z - A.z)
+//                        let AC = (x: C.x - A.x, y: C.y - A.y, z: C.z - A.z)
+                        
+                        let AB = CubicData.minus(a: B, b: A)
+                        let AC = CubicData.minus(a: C, b: A)
+                        let result = CubicData.cross(a: AB, b: AC).norm() / 2.0
 
-                        let absAB = sqrt(AB.x * AB.x + AB.y * AB.y + AB.z * AB.z)
-                        let absAC = sqrt(AC.x * AC.x + AC.y * AC.y + AC.z * AC.z)
+//                        let absAB = sqrt(AB.x * AB.x + AB.y * AB.y + AB.z * AB.z)
+//                        let absAC = sqrt(AC.x * AC.x + AC.y * AC.y + AC.z * AC.z)
+//
+//                        let dotProduct = AB.x * AC.x + AB.y * AC.y + AB.z * AC.z
+//                        let crossProductMagnitude = sqrt((AB.y * AC.z - AB.z * AC.y) * (AB.y * AC.z - AB.z * AC.y) +
+//                                                         (AB.z * AC.x - AB.x * AC.z) * (AB.z * AC.x - AB.x * AC.z) +
+//                                                         (AB.x * AC.y - AB.y * AC.x) * (AB.x * AC.y - AB.y * AC.x))
 
-                        let dotProduct = AB.x * AC.x + AB.y * AC.y + AB.z * AC.z
-                        let crossProductMagnitude = sqrt((AB.y * AC.z - AB.z * AC.y) * (AB.y * AC.z - AB.z * AC.y) +
-                                                         (AB.z * AC.x - AB.x * AC.z) * (AB.z * AC.x - AB.x * AC.z) +
-                                                         (AB.x * AC.y - AB.y * AC.x) * (AB.x * AC.y - AB.y * AC.x))
+//                        let angleBetween = asin(crossProductMagnitude / (absAB * absAC))
+//                        let result = 1/2 * absAB * absAC * sin(angleBetween)
 
-                        let angleBetween = asin(crossProductMagnitude / (absAB * absAC))
-                        let result = 1/2 * absAB * absAC * sin(angleBetween)
+                        print(result)
+                        //totalArea += result // 結果を累積
 
-                        totalArea += result // 結果を累積
-
-                        print("位置: \(B.index)番目と\(C.index)番目の間の計算結果: \(result)")
+                        totalArea += result * (isPlus ? 1 : -1) // 結果を累積
+                        print(totalArea)
+                        //print("位置: \(B.index)番目と\(C.index)番目の間の計算結果: \(result)")
                     }
                 }
                 
@@ -312,4 +323,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         let dateString = formatter.string(from: date)
         dateLabel.text = dateString
     }
+}
+
+struct CubicData {
+  var x: Double
+  var y: Double
+  var z: Double
+  func norm() -> Double {
+    return sqrt(x * x + y * y + z * z)
+  }
+  static func minus(a: CubicData, b: CubicData) -> CubicData {
+    return CubicData(x: a.x - b.x, y: a.y - b.y, z: a.z - b.z)
+  }
+  static func cross(a: CubicData, b: CubicData) -> CubicData {
+    return CubicData(x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x)
+  }
 }

@@ -13,22 +13,24 @@ import RealmSwift
 class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
     @IBOutlet var mapView: MKMapView!
-    var locationManager: CLLocationManager!
     @IBOutlet weak var clickZoomin: UIButton!
     @IBOutlet weak var clickZoomout: UIButton!
     @IBOutlet weak var area: UILabel!
     @IBOutlet weak var CurrentLocationButton: UIButton!
     @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var bottomLabelFront: UILabel!
     
+    var locationManager: CLLocationManager!
     var routeCoordinates: [CLLocationCoordinate2D] = []
     var currentPolyline: MKPolyline?
     var resetRouteTimer: Timer?
-    
+    var locationUpdateTimer: Timer?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        area.text = "0"
+        //area.text = "0"
         
         locationManager = CLLocationManager()
         locationManager.delegate = self
@@ -42,6 +44,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         setupRouteResetTimer()
         
         updateDateLabel()
+        
+        locationUpdateTimer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(requestLocationUpdate), userInfo: nil, repeats: true)
+    }
+    
+    @objc func requestLocationUpdate() {
+        locationManager.requestLocation()
     }
     
     @IBAction func clickZoomin(_ sender: Any) {
@@ -298,6 +306,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         }
     }
     
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("位置情報の取得に失敗しました: \(error.localizedDescription)")
+    }
+
     func getCurrentDateTimeString() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSSxxxxx"
@@ -307,6 +319,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     }
     
     deinit {
+        locationUpdateTimer?.invalidate()
         resetRouteTimer?.invalidate()
     }
     
@@ -323,6 +336,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         let dateString = formatter.string(from: date)
         dateLabel.text = dateString
     }
+    
+    
 }
 
 struct CubicData {

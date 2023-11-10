@@ -21,9 +21,9 @@
 			</array>
 		</dict>
 	</dict>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>辿った経路を記録するために位置情報を使用します。</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>辿った経路を記録するために位置情報を使用します。</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>

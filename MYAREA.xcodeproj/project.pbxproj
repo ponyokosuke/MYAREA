@@ -319,6 +319,7 @@
 				INFOPLIST_FILE = MYAREA/Info.plist;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "辿った経路を記録するために位置情報を使用します。";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "辿った経路を記録するために位置情報を使用します。";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "辿った経路を記録するために位置情報を使用します。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -329,7 +330,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.Yamashita.Kosuke.MYAREA;
+				PRODUCT_BUNDLE_IDENTIFIER = app.Yamashita.Kosuke.MYAREA1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -349,6 +350,7 @@
 				INFOPLIST_FILE = MYAREA/Info.plist;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "辿った経路を記録するために位置情報を使用します。";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "辿った経路を記録するために位置情報を使用します。";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "辿った経路を記録するために位置情報を使用します。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -359,7 +361,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.Yamashita.Kosuke.MYAREA;
+				PRODUCT_BUNDLE_IDENTIFIER = app.Yamashita.Kosuke.MYAREA1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
